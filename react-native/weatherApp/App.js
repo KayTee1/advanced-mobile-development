@@ -1,26 +1,31 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Button, TextInput, Image } from "react-native";
+import Header from "./Header.js";
+import WeatherInfo from "./WeatherInfo.js";
+import LocationInput from "./LocationInput.js";
 
 export default function App() {
-  const [text, onChangeText] = useState("tampere");
-  const [location, onChangeLocation] = useState("");
-
+  const [inputLocation, onChangeLocation] = useState("Tampere");
   const [weatherData, setWeatherData] = useState({});
 
-  const fetchData = useCallback(async () => {
-    try {
-      const key = process.env.REACT_APP_API_KEY;
-      const location = text;
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${key}&units=metric`;
-      const res = await fetch(url);
-      const data = await res.json();
+  const fetchData = useCallback(
+    async () => {
+      console.log(inputLocation)
+      try {
+        const key = process.env.API_KEY;
+        const location = inputLocation;
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${key}&units=metric`;
+        const res = await fetch(url);
+        const data = await res.json();
 
-      setWeatherData(data);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [text]);
+        setWeatherData(data);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    [inputLocation]
+  );
 
   useEffect(() => {
     fetchData();
@@ -40,22 +45,19 @@ export default function App() {
   const weatherLocation = weatherData.name;
   return (
     <View style={styles.container}>
-      <Text>Weather Now</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeLocation}
-        value={location}
-        placeholder="Enter Location"
+      <Header location={weatherLocation} />
+      <WeatherInfo
+        weatherStatus={weatherStatus}
+        weatherIcon={weatherIcon}
+        temperature={temperature}
+        windSpeed={windSpeed}
       />
-      <Text>{weatherLocation}</Text>
-      <Text>{weatherStatus !== undefined ? weatherStatus : "Loading..."}</Text>
-      <Image
-        style={styles.image}
-        source={{ uri: `https://openweathermap.org/img/wn/${weatherIcon}.png` }}
+      <LocationInput
+        fetchData={() => fetchData()}
+        location={inputLocation}
+        onChangeLocation={onChangeLocation}
       />
-      <Text>{temperature !== undefined ? temperature : "Loading..."}</Text>
-      <Text>{windSpeed !== undefined ? windSpeed : "Loading..."}</Text>
-      <Button title={"Update"} onPress={() => fetchData(location)}></Button>
+
       <StatusBar style="auto" />
     </View>
   );
@@ -67,15 +69,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-  },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-  image: {
-    width: 50,
-    height: 50,
   },
 });
