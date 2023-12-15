@@ -1,7 +1,12 @@
 import React from "react";
-import { StyleSheet, Text, View, Button, TextInput, Image } from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 
-export default function WeatherInfo({ weatherStatus, weatherIcon, temperature, windSpeed }) {
+export default function WeatherInfo({
+  weatherStatus,
+  weatherIcon,
+  temperature,
+  windSpeed,
+}) {
   return (
     <View style={styles.container}>
       <Text>{weatherStatus}</Text>

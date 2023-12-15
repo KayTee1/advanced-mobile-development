@@ -1,73 +1,29 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button, TextInput, Image } from "react-native";
-import Header from "./Header.js";
-import WeatherInfo from "./WeatherInfo.js";
-import LocationInput from "./LocationInput.js";
+import { StyleSheet, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
+import CurrentWeatherScreen from "./screens/CurrentWeatherScreen";
+import WeatherForecastScreen from "./screens/WeatherForecastScreen";
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function App() {
-  const [inputLocation, onChangeLocation] = useState("Tampere");
-  const [weatherData, setWeatherData] = useState({});
-
-  const fetchData = useCallback(
-    async () => {
-      console.log(inputLocation)
-      try {
-        const key = process.env.API_KEY;
-        const location = inputLocation;
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${key}&units=metric`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        setWeatherData(data);
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    [inputLocation]
-  );
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const temperature = weatherData.main?.temp + " c";
-  const windSpeed = weatherData.wind?.speed + " m/s";
-  const weatherStatus =
-    weatherData.weather && weatherData.weather.length
-      ? weatherData.weather[0].main
-      : undefined;
-  const weatherIcon =
-    weatherData.weather && weatherData.weather.length
-      ? weatherData.weather[0].icon
-      : undefined;
-
-  const weatherLocation = weatherData.name;
   return (
-    <View style={styles.container}>
-      <Header location={weatherLocation} />
-      <WeatherInfo
-        weatherStatus={weatherStatus}
-        weatherIcon={weatherIcon}
-        temperature={temperature}
-        windSpeed={windSpeed}
-      />
-      <LocationInput
-        fetchData={() => fetchData()}
-        location={inputLocation}
-        onChangeLocation={onChangeLocation}
-      />
-
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Current weather"
+          component={CurrentWeatherScreen}
+        ></Tab.Screen>
+        <Tab.Screen
+          name="Weather forecast"
+          component={WeatherForecastScreen}
+        ></Tab.Screen>
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

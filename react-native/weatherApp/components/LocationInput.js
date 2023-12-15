@@ -1,20 +1,16 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Button, TextInput } from "react-native";
-export default function LocationInput({
-  fetchData,
-  location,
-  onChangeLocation,
-}) {
+export default function LocationInput({ onChangeLocation }) {
+  const [inputText, onChangeText] = useState("");
   const handleUpdate = () => {
-    fetchData();
+    onChangeLocation(inputText);
+    onChangeText("");
   };
-
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        onChangeText={(text) => onChangeLocation(text)}
-
+        onChangeText={(inputText) => onChangeText(inputText)}
         placeholder="Enter Location"
       />
 
